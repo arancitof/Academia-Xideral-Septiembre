@@ -1,6 +1,6 @@
-package Celular;
+package Celular.Pantalla;
 
-public class PantallaSamsung implements Pantalla{
+public class PantallaSamsung implements Pantalla {
 
     //Constructor de la pantalla
     public PantallaSamsung(){

@@ -1,5 +1,7 @@
 package Celular;
 
+import Celular.Pantalla.Pantalla;
+
 public class Celular {
 
     // Aquí se hace la Inyección de dependencias

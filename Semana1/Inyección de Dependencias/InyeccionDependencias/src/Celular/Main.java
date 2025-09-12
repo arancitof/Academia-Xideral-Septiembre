@@ -1,12 +1,13 @@
 package Celular;
 
+import Celular.Pantalla.Pantalla;
+import Celular.Pantalla.PantallaSamsung;
+
 public class Main {
     public static void main(String[] args) {
 
-        /*
-        * ============Bienvenidos a la planta de esamblaje de telefonos ==========
-        *
-        */
+        System.out.println("Bienbenidos al Ensamblador de Celulares");
+
 
         //Primero traigo los componentes que voy a usar
         Pantalla pantallaDeSamsung = new PantallaSamsung();
