@@ -3,7 +3,10 @@ package Celular;
 public class Main {
     public static void main(String[] args) {
 
-        //Este es mi empresa de ensamblaje.
+        /*
+        * ============Bienvenidos a la planta de esamblaje de telefonos ==========
+        *
+        */
 
         //Primero traigo los componentes que voy a usar
         Pantalla pantallaDeSamsung = new PantallaSamsung();
