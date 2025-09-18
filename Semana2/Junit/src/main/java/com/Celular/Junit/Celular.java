@@ -15,9 +15,9 @@ public class Celular {
     }
 
     public void encenderCelular(){
-        System.out.println("Encendiendo Celular");
+        System.out.println("Encendiendo Celular...");
         this.miPantalla.encenderPantalla();
         this.miCamara.tomarFoto();
-        System.out.println("Celular Encendido");
+        System.out.println("Celular Encendido! ✅");
     }
 }
