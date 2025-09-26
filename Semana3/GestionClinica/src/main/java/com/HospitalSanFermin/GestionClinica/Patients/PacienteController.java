@@ -54,4 +54,10 @@ public class PacienteController {
         return ResponseEntity.ok(doctoresDisponibles);
     }
 
+    @GetMapping("/{pacienteId}/historial-citas")
+    public ResponseEntity<List<Cita>> pacienteMisCitas(@PathVariable Long pacienteId){
+        List<Cita> citas = pacienteService.pacienteMisCitas(pacienteId);
+        return ResponseEntity.ok(citas);
+    }
+
 }

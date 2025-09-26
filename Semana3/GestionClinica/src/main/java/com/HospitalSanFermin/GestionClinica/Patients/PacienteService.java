@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,6 +36,7 @@ public class PacienteService {
 
     }
 
+    //Metodo para registrar nuevo paciente
     @Transactional
     public Paciente registrarPaciente(String nombre, String apellido, String sexo, String curp, String telefono, String email, String direccion, LocalDate fechaNacimiento) {
         // Verificar si ya existe un paciente con el mismo CURP o email
@@ -50,6 +52,8 @@ public class PacienteService {
     }
 
 
+
+    //Metodo para agendar una nueva cita
     @Transactional
     public Cita agendarCita(Long pacienteId, Long doctorId, LocalDateTime fechaHora, String motivoCita) {
         //Verificamos si el paciente ya tiene unc cita agendada
@@ -73,5 +77,14 @@ public class PacienteService {
         eventPublisher.publishEvent(new CitaAgendadaEvent(this,citaGuardada));
 
         return citaGuardada;
+    }
+
+    //metodo para que el paciente consulte sus citas
+    public List<Cita> pacienteMisCitas(Long pacienteId){
+        //primero hay que ver si el paciente esta registrado
+        if(!pacienteRepository.existsById(pacienteId)){
+            throw new IllegalStateException("El paciente con el ID: " + pacienteId + " no existe");
+        }
+        return citaRepository.findByPacienteId(pacienteId);
     }
 }
