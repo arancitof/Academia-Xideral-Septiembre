@@ -17,6 +17,9 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = false)
+    private String numeroPaciente;
+
     @Column(nullable = false)
     private String nombre;
 
@@ -44,7 +47,8 @@ public class Paciente {
     @Column
     private boolean citaAgendada;
 
-    public Paciente(String nombre, String apellido, String sexo, String curp, String telefono, String email, String direccion, LocalDate fechaNacimiento, boolean citaAgendada){
+    public Paciente(String numeroPaciente ,String nombre, String apellido, String sexo, String curp, String telefono, String email, String direccion, LocalDate fechaNacimiento, boolean citaAgendada){
+        this.numeroPaciente = numeroPaciente;
         this.nombre = nombre;
         this.apellido = apellido;
         this.sexo = sexo;

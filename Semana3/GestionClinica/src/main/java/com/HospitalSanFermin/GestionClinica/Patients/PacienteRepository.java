@@ -12,4 +12,5 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     //Para en caso no estar en la base de datos, crear uno nuevo
     Optional<Paciente> findByCurp(String curp);
     Optional<Paciente> findByEmail(String email);
+    Optional<Paciente> findByNumeroPaciente(String numeroPaciente);
 }

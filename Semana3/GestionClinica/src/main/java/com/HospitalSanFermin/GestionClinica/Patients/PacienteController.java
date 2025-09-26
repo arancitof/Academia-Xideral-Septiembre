@@ -38,13 +38,14 @@ public class PacienteController {
         return ResponseEntity.ok(nuevoPaciente);
     }
 
-    @PostMapping("/{pacienteId}/citas")
+    @PostMapping("/citas")
             public ResponseEntity<Cita> agendarCita(
-                    @PathVariable Long pacienteId,
-                    @RequestParam Long doctorId,
+                    @RequestParam String numeroPaciente,
+                    @RequestParam String nombreDoctor,
+                    @RequestParam String especialidad,
                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHora,
                     @RequestParam String motivoCita){
-        Cita nuevaCita = pacienteService.agendarCita(pacienteId, doctorId, fechaHora, motivoCita);
+        Cita nuevaCita = pacienteService.agendarCita(numeroPaciente, nombreDoctor, especialidad, fechaHora, motivoCita);
         return ResponseEntity.ok(nuevaCita);
     }
 
@@ -54,9 +55,9 @@ public class PacienteController {
         return ResponseEntity.ok(doctoresDisponibles);
     }
 
-    @GetMapping("/{pacienteId}/historial-citas")
-    public ResponseEntity<List<Cita>> pacienteMisCitas(@PathVariable Long pacienteId){
-        List<Cita> citas = pacienteService.pacienteMisCitas(pacienteId);
+    @GetMapping("/pacientes/{numeroPaciente}/historial-citas")
+    public ResponseEntity<List<Cita>> pacienteMisCitas(@PathVariable String numeroPaciente){
+        List<Cita> citas = pacienteService.pacienteMisCitas(numeroPaciente);
         return ResponseEntity.ok(citas);
     }
 

@@ -47,7 +47,11 @@ public class PacienteService {
             throw new IllegalStateException("Ya existe un paciente con el email proporcionado.");
         }
 
-        Paciente nuevoPaciente = new Paciente(nombre, apellido, sexo, curp, telefono, email, direccion, fechaNacimiento, false);
+        //Lógica para generar el número de pacientes
+        long totalpacientesRegistrados = pacienteRepository.count();
+        String numeroPaciente = String.format("SF-%05d", totalpacientesRegistrados + 1);
+
+        Paciente nuevoPaciente = new Paciente(numeroPaciente, nombre, apellido, sexo, curp, telefono, email, direccion, fechaNacimiento, false);
         return pacienteRepository.save(nuevoPaciente);
     }
 
@@ -55,10 +59,10 @@ public class PacienteService {
 
     //Metodo para agendar una nueva cita
     @Transactional
-    public Cita agendarCita(Long pacienteId, Long doctorId, LocalDateTime fechaHora, String motivoCita) {
+    public Cita agendarCita(String numeroPaciente, String nombreDoctor, String especialidad, LocalDateTime fechaHora, String motivoCita) {
         //Verificamos si el paciente ya tiene unc cita agendada
-        Paciente paciente = pacienteRepository.findById(pacienteId)
-                .orElseThrow(()-> new IllegalStateException("El paciente con el ID: " + pacienteId + " no existe"));
+        Paciente paciente = pacienteRepository.findByNumeroPaciente(numeroPaciente)
+                .orElseThrow(()-> new IllegalStateException("El paciente con el ID: " + numeroPaciente + " no existe"));
 
         Optional<Cita> citaExistente = citaRepository.findByPacienteAndFechaHora(paciente, fechaHora);
         if(citaExistente.isPresent()){
@@ -66,8 +70,8 @@ public class PacienteService {
         }
 
         //Verificamos si el doctor existe
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(()-> new IllegalStateException("El doctor con el ID: " + doctorId + " no existe"));
+        Doctor doctor = doctorRepository.findFirstByNombreAndEspecialidadAndDisponible(nombreDoctor, especialidad, true)
+                .orElseThrow(()-> new IllegalStateException("El doctor con el nombre: " + nombreDoctor + " y especialidad: " + especialidad + " no existe"));
 
         //Creamos y agendamos la cita
         Cita nuevaCita = new Cita(paciente, doctor, fechaHora, motivoCita);
@@ -80,11 +84,13 @@ public class PacienteService {
     }
 
     //metodo para que el paciente consulte sus citas
-    public List<Cita> pacienteMisCitas(Long pacienteId){
-        //primero hay que ver si el paciente esta registrado
-        if(!pacienteRepository.existsById(pacienteId)){
-            throw new IllegalStateException("El paciente con el ID: " + pacienteId + " no existe");
-        }
-        return citaRepository.findByPacienteId(pacienteId);
+    public List<Cita> pacienteMisCitas(String numeroPaciente){
+        // Buscamos al paciente por su número para obtener su ID interno.
+        Paciente paciente = pacienteRepository.findByNumeroPaciente(numeroPaciente)
+                .orElseThrow(() -> new IllegalStateException("No se encontró un paciente con el número: " + numeroPaciente));
+
+
+        //Usamos su id interno para buscar sus citas.
+        return citaRepository.findByPacienteId(paciente.getId());
     }
 }
