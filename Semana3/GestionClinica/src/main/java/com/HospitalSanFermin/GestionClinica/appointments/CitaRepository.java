@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface CitaRepository extends JpaRepository<Cita, Long> {
-    Optional<Cita>findByPacienteCitaFechaHora(Paciente paciente, LocalDateTime fechaHora);
+    Optional<Cita> findByPacienteAndFechaHora(Paciente paciente, LocalDateTime fechaHora);
 }

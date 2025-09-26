@@ -13,7 +13,7 @@ public class DoctorService {
         Long doctorId = event.getCita().getDoctor().getId();
         String nombrePaciente = event.getCita().getPaciente().getNombre();
 
-        System.out.println("HOSPITAL SF: Nueva cita agendada!");
+        System.out.println("HOSPITAL SF 🏥: Nueva cita agendada!");
         System.out.println("Doctor con ID: " + doctorId + " tiene una nueva cita con el paciente: " + nombrePaciente);
         System.out.println("Fecha y hora de la cita: " + event.getCita().getFechaHora());
     }

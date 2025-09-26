@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -34,6 +35,19 @@ public class PacienteService {
 
     }
 
+    @Transactional
+    public Paciente registrarPaciente(String nombre, String apellido, String sexo, String curp, String telefono, String email, String direccion, LocalDate fechaNacimiento) {
+        // Verificar si ya existe un paciente con el mismo CURP o email
+        if (pacienteRepository.findByCurp(curp).isPresent()) {
+            throw new IllegalStateException("Ya existe un paciente con el CURP proporcionado.");
+        }
+        if (pacienteRepository.findByEmail(email).isPresent()) {
+            throw new IllegalStateException("Ya existe un paciente con el email proporcionado.");
+        }
+
+        Paciente nuevoPaciente = new Paciente(nombre, apellido, sexo, curp, telefono, email, direccion, fechaNacimiento, false);
+        return pacienteRepository.save(nuevoPaciente);
+    }
 
 
     @Transactional
@@ -42,7 +56,7 @@ public class PacienteService {
         Paciente paciente = pacienteRepository.findById(pacienteId)
                 .orElseThrow(()-> new IllegalStateException("El paciente con el ID: " + pacienteId + " no existe"));
 
-        Optional<Cita> citaExistente = citaRepository.findByPacienteCitaFechaHora(paciente, LocalDateTime.now());
+        Optional<Cita> citaExistente = citaRepository.findByPacienteAndFechaHora(paciente, fechaHora);
         if(citaExistente.isPresent()){
             throw new IllegalStateException("El paciente ya tiene una cita agendada para esta fecha y hora: " + citaExistente.get().getFechaHora());
         }
@@ -59,11 +73,5 @@ public class PacienteService {
         eventPublisher.publishEvent(new CitaAgendadaEvent(this,citaGuardada));
 
         return citaGuardada;
-
-
-
     }
-
-
-
 }
