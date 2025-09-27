@@ -55,10 +55,15 @@ public class PacienteController {
         return ResponseEntity.ok(doctoresDisponibles);
     }
 
-    @GetMapping("/pacientes/{numeroPaciente}/historial-citas")
+    @GetMapping("/{numeroPaciente}/historial-citas")
     public ResponseEntity<List<Cita>> pacienteMisCitas(@PathVariable String numeroPaciente){
         List<Cita> citas = pacienteService.pacienteMisCitas(numeroPaciente);
         return ResponseEntity.ok(citas);
     }
 
+    @DeleteMapping("/pacientes/{numeroPaciente}/citas/{citaId}")
+    public ResponseEntity<Void> eliminarCita(@PathVariable String numeroPaciente, @PathVariable Long citaId){
+        pacienteService.eliminarCita(numeroPaciente, citaId);
+        return ResponseEntity.noContent().build();
+    }
 }

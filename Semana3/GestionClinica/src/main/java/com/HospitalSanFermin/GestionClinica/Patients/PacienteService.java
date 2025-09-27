@@ -93,4 +93,23 @@ public class PacienteService {
         //Usamos su id interno para buscar sus citas.
         return citaRepository.findByPacienteId(paciente.getId());
     }
+
+    //Metodo para borrar una cita agendada
+    @Transactional
+    public void eliminarCita(String numeroPaciente ,Long citaId) {
+        //Verificamos que exista el paciente
+        Paciente pacienteSolicitante = pacienteRepository.findByNumeroPaciente(numeroPaciente)
+                .orElseThrow(() -> new IllegalStateException("No se encontró un paciente con el número: " + numeroPaciente));
+
+        //Verificamos que exista la cita
+        Cita cita = citaRepository.findById(citaId)
+                .orElseThrow(() -> new IllegalStateException("No se encontró una cita con el ID: " +citaId));
+        //Como buena practica, hay que asegurarnos que el Id del paciente coinsida con el Id de la cita
+        if(!cita.getPaciente().getId().equals(pacienteSolicitante.getId())){
+            throw new IllegalStateException("Esta cita no te pertenece");
+        }
+        citaRepository.delete(cita);
+    }
+
+
 }
