@@ -35,6 +35,9 @@ public class Experiment {
     @Column(length = 50)
     private ExperimentStatus status;
 
+    @Column(nullable = false ,length = 100)
+    private levelRisk risk;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "investigator_license_number", referencedColumnName = "licenseNumber")
     private Investigator investigator;
@@ -52,5 +55,11 @@ public class Experiment {
         IN_PROGRESS,
         COMPLETED,
         CANCELLED
+    }
+
+    public enum levelRisk{
+        LOW,
+        MEDIUM,
+        HIGH
     }
 }
