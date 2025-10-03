@@ -14,7 +14,7 @@ public class ExperimentRequest {
     @NotBlank(message = "Es requerido el nombre del experimento")
     private String name;
 
-    @NotNull(message = "El status del experimento es necesario")
+    @NotBlank(message = "El status del experimento es necesario")
     private String status;
 
     @NotNull(message = "El nivel de riesgo del experimento es necesario")
