@@ -6,6 +6,7 @@ import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Invest
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.repository.InvestigatorRepository;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentCreatedEvent;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentFinalizedEvent;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentHighRiskEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -58,6 +59,10 @@ public class ExperimentServiceImpl implements ExperimentService{
         );
         eventPublisher.publishEvent(event);
         log.info("ExperimentCreatedEvent publicado para el experimento con folio: {}", savedExperiment.getFolio());
+
+
+        //Si se crea un Experimento de alto Riesgo desde aqui llamamos al metodo
+        publishHighRiskEventIfNecessary(savedExperiment);
 
         return savedExperiment;
     }
@@ -130,6 +135,11 @@ public class ExperimentServiceImpl implements ExperimentService{
             log.info("ExperimentFinalizedEvent ha publicado para el experimento con folio: {}", updatedExperiment.getFolio());
 
         }
+
+        //Si se actualiza un Experimento como de alto RIESGO aquí llamamos al metodo
+        publishHighRiskEventIfNecessary(updatedExperiment);
+
+        //Devolvemos el experimento actualizado
         return updatedExperiment;
     }
 
@@ -181,5 +191,22 @@ public class ExperimentServiceImpl implements ExperimentService{
     @Override
     public boolean existsByFolio(String folio) {
         return experimentRepository.existsByFolio(folio);
+    }
+
+    //METODO para saber si hay un experimento de alto Riesgo
+    public void publishHighRiskEventIfNecessary(Experiment experiment){
+        if (experiment.getRisk() == Experiment.levelRisk.HIGH){
+            ExperimentHighRiskEvent event = new ExperimentHighRiskEvent(
+                    experiment.getId(),
+                    experiment.getFolio(),
+                    experiment.getName(),
+                    experiment.getRisk().name(),
+                    experiment.getInvestigator().getLicenseNumber(),
+                    //Tomamos la fecha m[as reciente
+                    experiment.getUpdatedAt() != null ? experiment.getUpdatedAt() : experiment.getCreatedAt()
+            );
+            eventPublisher.publishEvent(event);
+            log.info("ExperimentHighRiskEvent ha publicado para el experimento con folio: {}", experiment.getFolio());
+        }
     }
 }
