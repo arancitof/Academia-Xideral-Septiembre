@@ -4,8 +4,10 @@ import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.model.Experime
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.repository.ExperimentRepository;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.repository.InvestigatorRepository;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class ExperimentServiceImpl implements ExperimentService{
     //El service depende de los repositorios Experiment y Investigator
     private final ExperimentRepository experimentRepository;
     private final InvestigatorRepository investigatorRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -40,7 +43,22 @@ public class ExperimentServiceImpl implements ExperimentService{
             //Aqui generamos el folio unico del experimento
         experiment.setFolio(generateUniqueFolio());
 
-        return experimentRepository.save(experiment);
+        //Guardamos el experimento
+        Experiment savedExperiment = experimentRepository.save(experiment);
+
+        //Publicamos el evento de que se ha creado un nuevo experimento
+        ExperimentCreatedEvent event = new ExperimentCreatedEvent(
+                savedExperiment.getId(),
+                savedExperiment.getFolio(),
+                savedExperiment.getName(),
+                savedExperiment.getRisk().name(),
+                savedExperiment.getInvestigator().getLicenseNumber(),
+                savedExperiment.getCreatedAt()
+        );
+        eventPublisher.publishEvent(event);
+        log.info("ExperimentCreatedEvent publicado para el experimento con folio: {}", savedExperiment.getFolio());
+
+        return savedExperiment;
     }
 
     @Override
@@ -135,6 +153,6 @@ public class ExperimentServiceImpl implements ExperimentService{
 
     @Override
     public boolean existsByFolio(String folio) {
-        return false;
+        return experimentRepository.existsByFolio(folio);
     }
 }
