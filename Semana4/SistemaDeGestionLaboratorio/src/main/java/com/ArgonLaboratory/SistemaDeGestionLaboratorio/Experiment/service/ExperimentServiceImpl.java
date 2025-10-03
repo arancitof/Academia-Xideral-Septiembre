@@ -5,6 +5,7 @@ import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.repository.Exp
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.repository.InvestigatorRepository;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentCreatedEvent;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentFinalizedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -90,6 +91,10 @@ public class ExperimentServiceImpl implements ExperimentService{
         Experiment existingExperiment = experimentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Experimento no encontrado con el id: " + id));
 
+        //Guardamos el estado anterior
+        Experiment.ExperimentStatus previousStatus = existingExperiment.getStatus();
+
+        //Actualizacion de datos
         existingExperiment.setName(experimentDetails.getName());
         existingExperiment.setDescription(experimentDetails.getDescription());
         existingExperiment.setStatus(experimentDetails.getStatus());
@@ -103,7 +108,29 @@ public class ExperimentServiceImpl implements ExperimentService{
         }else {
             throw new IllegalArgumentException("Investigador no encontrado");
         }
-        return experimentRepository.save(existingExperiment);
+
+        //Guardamos los datos Acualizados
+        Experiment updatedExperiment = experimentRepository.save(existingExperiment);
+
+        //Comprobamos si el experimento ya se marco como finalizado
+        if (updatedExperiment.getStatus() == Experiment.ExperimentStatus.COMPLETED && previousStatus != Experiment.ExperimentStatus.COMPLETED){
+
+            //Creamos el evento
+            ExperimentFinalizedEvent event = new ExperimentFinalizedEvent(
+                    updatedExperiment.getId(),
+                    updatedExperiment.getFolio(),
+                    updatedExperiment.getName(),
+                    updatedExperiment.getStatus().name(),
+                    updatedExperiment.getInvestigator().getLicenseNumber(),
+                    updatedExperiment.getUpdatedAt()
+
+            );
+            //Publicamos el evento
+            eventPublisher.publishEvent(event);
+            log.info("ExperimentFinalizedEvent ha publicado para el experimento con folio: {}", updatedExperiment.getFolio());
+
+        }
+        return updatedExperiment;
     }
 
     @Override
