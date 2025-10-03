@@ -30,8 +30,8 @@ public class ExperimentServiceImpl implements ExperimentService{
     @Transactional
     public Experiment createExperiment(Experiment experiment) {
         //Hay que asegurarnos que exista un investigador valido
-        if (experiment.getInvestigator() != null && experiment.getInvestigator().getLicenseNumber() != null){
-            throw new IllegalArgumentException("Investigador no encontrado");
+        if (experiment.getInvestigator() == null || experiment.getInvestigator().getLicenseNumber() == null){
+            throw new IllegalArgumentException("La licencia del investigador es obligatoria para crear un experimento.");
         }
             Investigator investigator = investigatorRepository.findByLicenseNumber(experiment.getInvestigator().getLicenseNumber())
                     .orElseThrow(() -> new IllegalArgumentException("Investigador no encontrado con la cedula: " + experiment.getInvestigator().getLicenseNumber()));

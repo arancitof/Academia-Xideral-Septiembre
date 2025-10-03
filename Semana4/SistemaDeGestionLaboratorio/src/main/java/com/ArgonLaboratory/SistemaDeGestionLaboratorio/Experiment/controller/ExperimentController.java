@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,20 +22,18 @@ import java.util.stream.Collectors;
 @Tag(name = "Experimentos", description = "Experimentos API")
 public class ExperimentController {
 
-    //Recuerda que el Controller depende del Service, hay que inyectarlo
     private final ExperimentService experimentService;
 
-    //Peticion para crear nuevo experimento
     @PostMapping
     @Operation(summary = "Crear experimento", description = "Crear un nuevo experimento")
     public ResponseEntity<ExperimentResponse> createExperiment(
             @Valid @RequestBody ExperimentRequest request) {
         Experiment newExperiment = new Experiment();
         newExperiment.setName(request.getName());
-        newExperiment.setStatus(Experiment.ExperimentStatus.valueOf(request.getStatus()));
-        newExperiment.setRisk(Experiment.levelRisk.valueOf(request.getRisk()));
+        newExperiment.setDescription(request.getDescription());
+        newExperiment.setStatus(request.getStatus());
+        newExperiment.setRisk(request.getRisk());
 
-        //// Creamos un objeto Investigator temporal solo con la licencia para pasarlo al servicio
         Investigator investigator = new Investigator();
         investigator.setLicenseNumber(request.getInvestigatorLicenseNumber());
         newExperiment.setInvestigator(investigator);
@@ -45,13 +42,12 @@ public class ExperimentController {
         return ResponseEntity.ok(ExperimentResponse.fromEntity(createdExperiment));
     }
 
-    //Peticion para obtner un experimento por su ID
     @GetMapping("/{id}")
     @Operation(summary = "Obtener experimento por ID", description = "Obtener un experimento por su ID")
     public ResponseEntity<ExperimentResponse> getExperimentById(
             @PathVariable Long id) {
         return experimentService.getExperimentById(id)
-                .map(experiment -> ResponseEntity.ok(ExperimentResponse.fromEntity(experiment))) // Si se encuentra, mapea a DTO y devuelve 200 OK
+                .map(experiment -> ResponseEntity.ok(ExperimentResponse.fromEntity(experiment)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -81,8 +77,11 @@ public class ExperimentController {
             @Valid @RequestBody ExperimentRequest request) {
         Experiment experimentUpdated = new Experiment();
         experimentUpdated.setName(request.getName());
-        experimentUpdated.setStatus(Experiment.ExperimentStatus.valueOf(request.getStatus()));
-        experimentUpdated.setRisk(Experiment.levelRisk.valueOf(request.getRisk()));
+        // --- CAMBIO AÑADIDO ---
+        experimentUpdated.setDescription(request.getDescription());
+        // --- CAMBIO CORREGIDO (ya no se necesita valueOf) ---
+        experimentUpdated.setStatus(request.getStatus());
+        experimentUpdated.setRisk(request.getRisk());
 
         Investigator investigator = new Investigator();
         investigator.setLicenseNumber(request.getInvestigatorLicenseNumber());
@@ -92,14 +91,14 @@ public class ExperimentController {
         return ResponseEntity.ok(ExperimentResponse.fromEntity(updatedExperiment));
     }
 
-    @DeleteMapping("/{id")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar experimento")
     public ResponseEntity<Void> deleteExperiment(
             @PathVariable Long id) {
         experimentService.deleteExperiment(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/search/by-risk")
     @Operation(summary = "Búsqueda de experimento por nivel de Riesgo")
     public ResponseEntity<List<ExperimentResponse>> findByRisk(
@@ -146,7 +145,7 @@ public class ExperimentController {
     @GetMapping("/exists/folio/{folio}")
     public ResponseEntity<Void> checkFolioExists(@PathVariable String folio) {
         return experimentService.findByFolio(folio)
-                .map(experiment -> ResponseEntity.ok().<Void>build()) // Si existe, devuelve 200 OK
-                .orElse(ResponseEntity.notFound().build());          // Si no existe, devuelve 404 Not Found
+                .map(experiment -> ResponseEntity.ok().<Void>build()) 
+                .orElse(ResponseEntity.notFound().build());
     }
 }
