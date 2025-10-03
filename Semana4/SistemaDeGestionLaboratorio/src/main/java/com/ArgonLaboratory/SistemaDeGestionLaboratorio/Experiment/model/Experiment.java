@@ -28,6 +28,9 @@ public class Experiment {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(name ="folio", unique = true, nullable = false, updatable = false, length = 50)
+    private String folio;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
