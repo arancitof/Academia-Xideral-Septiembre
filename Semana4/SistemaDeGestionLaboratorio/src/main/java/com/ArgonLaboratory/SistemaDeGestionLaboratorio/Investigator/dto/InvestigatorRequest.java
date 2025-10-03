@@ -31,4 +31,11 @@ public class InvestigatorRequest {
     @Pattern(regexp = "^[0-9]{7,8}$",
             message = "La cédula debe contener 7 u 8 dígitos")
     private String licenseNumber;
+
+    @NotBlank(message = "La especialización es requerida")
+    private String specialization;
+
+    @NotBlank(message = "El numero de teléfono es requerido")
+    @Pattern(regexp = "^\\d{10}$", message = "El número de teléfono debe tener 10 dígitos")
+    private String phone;
 }
