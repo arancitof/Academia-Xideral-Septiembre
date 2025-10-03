@@ -3,8 +3,10 @@ package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.service;
 
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.repository.InvestigatorRepository;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.InvestigatorCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ public class InvestigatorServiceImpl implements InvestigatorService{
 
     //Lo que necesito para implementar el servicio
     private final InvestigatorRepository investigatorRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     //Crear un Investigador
@@ -28,7 +31,20 @@ public class InvestigatorServiceImpl implements InvestigatorService{
         if(investigatorRepository.existsByLicenseNumber(investigator.getLicenseNumber())){
             throw new IllegalStateException("Ya existe un investigador con esa cedula profesional: " +investigator.getLicenseNumber());
         }
-        return investigatorRepository.save(investigator);
+        //Guardamos el investigador
+        Investigator savedInvestigator = investigatorRepository.save(investigator);
+
+        //Publicamos el evento de que se ha creado un nuevo investigador
+        InvestigatorCreatedEvent event = new InvestigatorCreatedEvent(
+                savedInvestigator.getId(),
+                savedInvestigator.getFullName(),
+                savedInvestigator.getEmail(),
+                savedInvestigator.getCreatedAt()
+        );
+        eventPublisher.publishEvent(event);
+        log.info("InvestigatorCreatedEvent publicado para el investigador con Cedula: {}" , savedInvestigator.getLicenseNumber());
+        return savedInvestigator;
+
     }
 
     //Actualizar un Investigador
