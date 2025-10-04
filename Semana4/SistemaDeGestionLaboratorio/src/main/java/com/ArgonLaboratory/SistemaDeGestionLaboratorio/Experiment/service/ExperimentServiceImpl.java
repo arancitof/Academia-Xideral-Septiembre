@@ -4,6 +4,7 @@ import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.model.Experime
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.repository.ExperimentRepository;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.repository.InvestigatorRepository;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentCancelledEvent;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentCreatedEvent;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentFinalizedEvent;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.ExperimentHighRiskEvent;
@@ -133,6 +134,21 @@ public class ExperimentServiceImpl implements ExperimentService{
             //Publicamos el evento
             eventPublisher.publishEvent(event);
             log.info("ExperimentFinalizedEvent ha publicado para el experimento con folio: {}", updatedExperiment.getFolio());
+
+        }
+        //Comprobamos si el experimento fue cancelado
+        else if (updatedExperiment.getStatus() == Experiment.ExperimentStatus.CANCELLED && previousStatus != Experiment.ExperimentStatus.CANCELLED) {
+            //Creamos el evento
+            ExperimentCancelledEvent cancelledEvent = new ExperimentCancelledEvent(
+                    updatedExperiment.getId(),
+                    updatedExperiment.getFolio(),
+                    updatedExperiment.getName(),
+                    updatedExperiment.getStatus().name(),
+                    updatedExperiment.getInvestigator().getLicenseNumber(),
+                    updatedExperiment.getUpdatedAt()
+            );
+            eventPublisher.publishEvent(cancelledEvent);
+            log.info("ExperimentCancelledEvent ha publicado para el experimento con folio: {}", updatedExperiment.getFolio());
 
         }
 
