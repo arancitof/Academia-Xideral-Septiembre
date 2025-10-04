@@ -2,6 +2,7 @@ package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.service;
 
 
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Specialization;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.repository.InvestigatorRepository;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.InvestigatorCreatedEvent;
 import lombok.RequiredArgsConstructor;
@@ -90,8 +91,17 @@ public class InvestigatorServiceImpl implements InvestigatorService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Investigator> getAllInvestigators() {
-        return investigatorRepository.findAll();
+    public List<Investigator> getAllInvestigators(Specialization specialization) {
+        // Si el parámetro 'specialization' es nulo, trae a todos los investigadores.
+        if (specialization == null) {
+            log.info("Obteniendo todos los investigadores (sin filtro).");
+            return investigatorRepository.findAll();
+        }
+        // Si el parámetro SÍ tiene un valor, filtra por esa especialización.
+        else {
+            log.info("Filtrando investigadores por especialización: {}", specialization);
+            return investigatorRepository.findAllBySpecialization(specialization);
+        }
     }
 
     @Override

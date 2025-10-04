@@ -4,6 +4,7 @@ package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.Controller;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.dto.InvestigatorRequest;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.dto.InvestigatorResponse;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Specialization;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.service.InvestigatorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -85,8 +87,8 @@ public class InvestigatorController {
     @GetMapping
     @Operation(summary = "Obtener todos los Investigadores", description = "Obtener a todos los investigadores registrados")
     public ResponseEntity<List<InvestigatorResponse>> getAllInvestigators(
-            @RequestParam(required = false) String specialization){
-        List<Investigator> investigators = investigatorService.getAllInvestigators();
+            @RequestParam(required = false) Specialization specialization){
+        List<Investigator> investigators = investigatorService.getAllInvestigators(specialization);
         List<InvestigatorResponse> response = investigators.stream()
                 .map(InvestigatorResponse::fromEntity)
                 .collect(Collectors.toList());

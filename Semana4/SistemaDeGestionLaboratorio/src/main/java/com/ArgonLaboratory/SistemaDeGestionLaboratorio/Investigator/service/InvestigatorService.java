@@ -1,6 +1,7 @@
 package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.service;
 
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Specialization;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public interface InvestigatorService {
     Optional<Investigator> getInvestigatorByEmail(String email);
 
     //Para obtener todos los Investigadores
-    List<Investigator> getAllInvestigators();
+    List<Investigator> getAllInvestigators(Specialization specialization);
 
     //Para Borrar un investigador
     void deleteInvestigator(Long id);
