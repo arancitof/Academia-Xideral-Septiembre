@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -128,6 +131,61 @@ public class NotificationServiceImpl implements NotificationService{
 
         notificationRepository.save(notification);
         log.info("Notificación de cancelación guardada en el historial. ID de notificación: {}", notification.getId());
+    }
+
+    @Override
+    public Notification createNotification(Notification notification) {
+        log.info("Se ha creado una notificacion para el Investigador: {} " , notification.getMessage());
+
+        if (notification.getCreatedAt() == null){
+            notification.setCreatedAt(java.time.LocalDateTime.now());
+        }
+        if (notification.getStatus() == null){
+            notification.setStatus(NotificationStatus.PENDING);
+        }
+        return notificationRepository.save(notification);
+    }
+
+    @Override
+    public Optional<Notification> findNotificationById(String id) {
+        log.info("Buscando notificiacion con el Id: {}" , id);
+        return notificationRepository.findById(id);
+    }
+
+    @Override
+    public List<Notification> findAllNotifications() {
+        log.info("Obteniendo todas las notificaciones del historial");
+        return notificationRepository.findAll();
+    }
+
+    @Override
+    public void deleteNotificationById(String id) {
+        log.info("Eliminando notificacion del historila con el Id: {}" , id);
+        notificationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Notification> findNotificationsByStatus(String status) {
+        log.info("Buscando notificaciones por estado: {}" , status);
+        return notificationRepository.findByStatus(NotificationStatus.valueOf(status));
+    }
+
+    @Override
+    public List<Notification> findNotificationsByType(String type) {
+        log.info("Buscando notificaciones por tipo: {}" ,type);
+        return notificationRepository.findByType(type);
+    }
+
+    @Override
+    public List<Notification> findNotificationsByChannel(String channel) {
+        log.info("Buscando notificaciones por canal: {}" , channel);
+        return notificationRepository.findByChannel(channel);
+    }
+
+    @Override
+    public List<Notification> findNotificationsByRelatedEntityId(String relatedEntityId) {
+        log.info("Buscando notificaciones por entidad relacionada: {}", relatedEntityId);
+        return notificationRepository.findByRelatedEntityId(relatedEntityId);
     }
 
 }
