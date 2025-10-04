@@ -9,8 +9,10 @@ import com.ArgonLaboratory.SistemaDeGestionLaboratorio.events.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.modulith.events.ApplicationModuleListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,7 @@ public class NotificationServiceImpl implements NotificationService{
 
 
     //Listener para cuando se Crea un nuevo experimento
-    @ApplicationModuleListener
+    @EventListener
     public void handleExperimentCreatedEvent(ExperimentCreatedEvent event) {
         //Logger de Lombok
         log.info("Evento recibido: Nuevo experimento creado. ID: {}" , event.getExperimentId());
@@ -49,7 +51,8 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     //Listener para cuando se crea un nuevo investigador
-    @ApplicationModuleListener
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @EventListener
     public void handleInvestigatorCreatedEvent(InvestigatorCreatedEvent event) {
         //Logger de Lombok
         log.info("Evento recibido: Nuevo investigador creado. ID: {}" , event.getInvestigatorId());
@@ -72,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     //Listener para Experimentos Finalizados
-    @ApplicationModuleListener
+    @EventListener
     public void handleExperimentFinalizedEvent(ExperimentFinalizedEvent event) {
         //Logger de Lombok
         log.info("Evento recibido: Experimento Finalizado. ID: {}" , event.getExperimentId());
@@ -94,7 +97,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     //Listener para Experimentos de Alto Riesgo
-    @ApplicationModuleListener
+    @EventListener
     public void handleExperimentHighRiskEvent(ExperimentHighRiskEvent event) {
         log.info("Evento recibido: Experimento de Alto Riesgo. ID: {}" , event.getExperimentId());
 
@@ -116,7 +119,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     // Listener para la cancelación de Experimentos
-    @ApplicationModuleListener
+    @EventListener
     public void handleExperimentCancelledEvent(ExperimentCancelledEvent event) {
         log.info("Evento recibido: Experimento cancelado. ID: {}", event.getExperimentId());
 

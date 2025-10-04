@@ -46,21 +46,21 @@ public class NotificationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("/search/by-status")
     @Operation(summary = "Obtener notificaciones por estado")
     public ResponseEntity<List<Notification>> getNotificationsByStatus(
             @RequestParam String status) {
         return ResponseEntity.ok(notificationService.findNotificationsByStatus(status));
     }
 
-    @GetMapping
+    @GetMapping("/search/by-type")
     @Operation(summary = "Obtener notificaciones por tipo")
     public ResponseEntity<List<Notification>> getNotificationsByType(
             @RequestParam String type) {
         return ResponseEntity.ok(notificationService.findNotificationsByType(type));
     }
 
-    @GetMapping
+    @GetMapping("/search/by-channel")
     @Operation(summary = "Obtener notificaciones por canal de envio")
     public ResponseEntity<List<Notification>> getNotificationsByChannel(
             @RequestParam String channel) {
