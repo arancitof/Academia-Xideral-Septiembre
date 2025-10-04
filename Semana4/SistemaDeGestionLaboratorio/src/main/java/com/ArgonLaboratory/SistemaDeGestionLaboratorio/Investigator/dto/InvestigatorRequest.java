@@ -1,6 +1,7 @@
 package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.dto;
 
 
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Specialization;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +33,8 @@ public class InvestigatorRequest {
             message = "La cédula debe contener 7 u 8 dígitos")
     private String licenseNumber;
 
-    @NotBlank(message = "La especialización es requerida")
-    private String specialization;
+    @NotNull(message = "La especialización es requerida")
+    private Specialization specialization;
 
     @NotBlank(message = "El numero de teléfono es requerido")
     @Pattern(regexp = "^\\d{10}$", message = "El número de teléfono debe tener 10 dígitos")

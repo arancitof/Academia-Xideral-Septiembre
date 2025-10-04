@@ -1,6 +1,7 @@
 package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.dto;
 
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Specialization;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class InvestigatorResponse {
     private String lastName;
     private String email;
     private String licenseNumber;
-    private String specialization;
+    private Specialization specialization;
     private String phone;
     private String createdAt;
 

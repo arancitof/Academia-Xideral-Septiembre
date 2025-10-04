@@ -40,9 +40,10 @@ public class Investigator {
     @Column(nullable = false, length = 100, unique = true)
     private String licenseNumber; //Cedula profesional
 
+    @Enumerated(EnumType.STRING)
     @NotBlank(message = "La especialización es requerida")
     @Column(name = "specialization", nullable = false)
-    private String specialization;
+    private Specialization specialization;
 
     @NotBlank(message = "El numero de teléfono es requerido ")
     @Pattern(regexp = "^\\d{10}$", message = "Numero no valido")
@@ -55,16 +56,6 @@ public class Investigator {
 
     public String getFullName(){
         return firstname + " " + lastName;
-    }
-
-    public enum Specialization{
-        ORGANIC_CHEMISTRY,
-        INORGANIC_CHEMISTRY,
-        ANALYTICAL_CHEMISTRY,
-        PHYSICAL_CHEMISTRY,
-        BIOCHEMISTRY,
-        ENVIRONMENTAL_CHEMISTRY,
-        PHARMACEUTICAL_CHEMISTRY;
     }
 
 }
