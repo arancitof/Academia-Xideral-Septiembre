@@ -10,7 +10,7 @@ import java.time.YearMonth;
 
 @Data
 @NoArgsConstructor
-@Document(collation = "monthly_reports")
+@Document(collection = "monthly_reports")
 public class DepartamentalReport {
 
     @Id
