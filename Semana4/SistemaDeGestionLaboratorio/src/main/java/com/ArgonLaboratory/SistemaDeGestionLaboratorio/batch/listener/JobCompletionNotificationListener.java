@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -20,9 +21,11 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
 
     // Inyectamos el writer para acceder a los resultados
     private final DepartamentalReportWriter writer;
+    private final MongoTemplate mongoTemplate;
 
-    public JobCompletionNotificationListener(DepartamentalReportWriter writer) {
+    public JobCompletionNotificationListener(DepartamentalReportWriter writer, MongoTemplate mongoTemplate) {
         this.writer = writer;
+        this.mongoTemplate = mongoTemplate;
     }
 
     //Este verifica el área de trabajo, se asegura que el writer este vacío y listo para su ejecución
@@ -47,8 +50,18 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
                 return;
             }
 
+            // 4. LÓGICA NUEVA: GUARDAR EN MONGODB
+            log.info("Guardando {} reportes en la colección 'monthly_reports' de MongoDB...", summary.size());
+            for (DepartamentalReport report : summary.values()) {
+                // El metodo save si un documento con el mismo ID ya existe, lo actualiza.
+                // Si no existe, lo inserta. Esto es perfecto gracias al ID que creamos.
+                mongoTemplate.save(report);
+            }
+            log.info("¡Reportes guardados exitosamente! 💾");
+
             //Aquí viene lo bueno, la lógica para obtener que Departamento (Specialization)
             // tuvo mayor puntaje de éxito durante el mes
+            log.info("--- Mostrando reporte en consola ---");
             DepartamentalReport topSpecialization = summary.values().stream()
                     .max(Comparator.comparingDouble(DepartamentalReport::getSuccessScore))
                     .orElse(null);
