@@ -17,7 +17,7 @@ public class DepartamentalReport {
     private String id;
 
     //Para saber en que mes es el reporte
-    private YearMonth reportPeriod;
+    private String reportPeriod;
 
     private Specialization specialization;
     private long successfulExperiments;
@@ -25,11 +25,12 @@ public class DepartamentalReport {
 
     public DepartamentalReport(Specialization specialization) {
         this.specialization = specialization;
+        YearMonth period = YearMonth.now().minusMonths(1);
         // ahora see calcula el periodo del reporte (el mes pasado)
-        this.reportPeriod = YearMonth.now().minusMonths(1);
+        this.reportPeriod = period.toString();
         // Se crea un ID único y predecible, ejemplo: "Biochemistry_2023-10"
         // Esto evita duplicados si el job se ejecuta más de una vez.
-        this.id = specialization.name() + "_" + this.reportPeriod.toString();
+        this.id = specialization.name() + "_" + this.reportPeriod;
         this.successfulExperiments = 0;
         this.successScore = 0.0;
     }

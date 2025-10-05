@@ -19,22 +19,25 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 public class MonthlyExperimentReader {
 
     public static ItemReader<Experiment> build(EntityManagerFactory entityManagerFactory){
-        YearMonth lastMonth = YearMonth.now().minusMonths(1);
+
+        /*ATENCION!!!!!
+        * Recuerda que dejas comentada esta linea ya que esta logica se activa cuando el sistema ya funciona
+        * y se generan experimento en el trascurso del mes*/
+/*        YearMonth lastMonth = YearMonth.now().minusMonths(1);
         LocalDate startDate = lastMonth.atDay(1);
-        LocalDate endDate = lastMonth.atEndOfMonth();
+        LocalDate endDate = lastMonth.atEndOfMonth();*/
 
         String jpqlQuery = "SELECT e FROM Experiment e " +
-                "WHERE e.status = :status AND e.createdAt BETWEEN :startDate AND :endDate " +
-                "ORDER BY e.id ASC";
+                "WHERE e.status = :status ORDER BY e.id ASC";
 
         return new JpaPagingItemReaderBuilder<Experiment>()
                 .name("monthlyExperimentJpaReader") // Le damos un nombre para JPA
                 .entityManagerFactory(entityManagerFactory) // Se le pasa el factory de JPA
                 .queryString(jpqlQuery) // Se le pasa la consulta JPQL
                 .parameterValues(Map.of( // Se le pasan los parámetros para la consulta
-                        "status", Experiment.ExperimentStatus.COMPLETED,
-                        "startDate", startDate.atStartOfDay(),
-                        "endDate", endDate.atTime(LocalTime.MAX)
+                        "status", Experiment.ExperimentStatus.COMPLETED
+/*                        "startDate", startDate.atStartOfDay(),
+                        "endDate", endDate.atTime(LocalTime.MAX)*/
                 ))
                 .pageSize(10) // Le decimos que lea de la BD en páginas de 10
                 .build();
