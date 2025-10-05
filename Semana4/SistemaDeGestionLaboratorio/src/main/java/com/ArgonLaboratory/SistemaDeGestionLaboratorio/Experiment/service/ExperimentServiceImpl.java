@@ -1,5 +1,6 @@
 package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.service;
 
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.dto.ExperimentRequest;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.model.Experiment;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.repository.ExperimentRepository;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Investigator.model.Investigator;
@@ -34,17 +35,19 @@ public class ExperimentServiceImpl implements ExperimentService{
 
     @Override
     @Transactional
-    public Experiment createExperiment(Experiment experiment) {
-        //Hay que asegurarnos que exista un investigador valido
-        if (experiment.getInvestigator() == null || experiment.getInvestigator().getLicenseNumber() == null){
-            throw new IllegalArgumentException("La licencia del investigador es obligatoria para crear un experimento.");
-        }
-            Investigator investigator = investigatorRepository.findByLicenseNumber(experiment.getInvestigator().getLicenseNumber())
-                    .orElseThrow(() -> new IllegalArgumentException("Investigador no encontrado con la cedula: " + experiment.getInvestigator().getLicenseNumber()));
-            experiment.setInvestigator(investigator);
+    public Experiment createExperiment(ExperimentRequest request) {
+        //Validamos y obtenemos el investigador
+            Investigator investigator = investigatorRepository.findByLicenseNumber(request.getInvestigatorLicenseNumber())
+                    .orElseThrow(() -> new IllegalArgumentException("Investigador no encontrado con la cedula: " + request.getInvestigatorLicenseNumber()));
 
-            //Aqui generamos el folio unico del experimento
-        experiment.setFolio(generateUniqueFolio());
+                    Experiment experiment = new Experiment();
+                    experiment.setName(request.getName());
+                    experiment.setDescription(request.getDescription());
+                    experiment.setStatus(request.getStatus());
+                    experiment.setRisk(request.getRisk());
+                    experiment.setInvestigator(investigator);
+                    //Aqui generamos el folio unico del experimento
+                    experiment.setFolio(generateUniqueFolio());
 
         //Guardamos el experimento
         Experiment savedExperiment = experimentRepository.save(experiment);

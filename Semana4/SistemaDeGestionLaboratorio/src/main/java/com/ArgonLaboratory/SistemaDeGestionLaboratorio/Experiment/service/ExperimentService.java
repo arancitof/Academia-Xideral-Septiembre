@@ -1,16 +1,17 @@
 package com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.service;
 
+import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.dto.ExperimentRequest;
 import com.ArgonLaboratory.SistemaDeGestionLaboratorio.Experiment.model.Experiment;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface ExperimentService {
 
     //Crear y guardar un nuevo experimento
-    Experiment createExperiment(Experiment experiment);
+    Experiment createExperiment(ExperimentRequest experiment);
 
     //Buscar experimento por Id
     Optional<Experiment> getExperimentById(Long id);

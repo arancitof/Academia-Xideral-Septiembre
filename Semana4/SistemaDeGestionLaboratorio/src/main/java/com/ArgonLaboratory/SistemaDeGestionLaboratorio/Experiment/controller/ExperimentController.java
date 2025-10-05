@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,18 +29,10 @@ public class ExperimentController {
     @Operation(summary = "Crear experimento", description = "Crear un nuevo experimento")
     public ResponseEntity<ExperimentResponse> createExperiment(
             @Valid @RequestBody ExperimentRequest request) {
-        Experiment newExperiment = new Experiment();
-        newExperiment.setName(request.getName());
-        newExperiment.setDescription(request.getDescription());
-        newExperiment.setStatus(request.getStatus());
-        newExperiment.setRisk(request.getRisk());
+        Experiment createdExperiment = experimentService.createExperiment(request);
 
-        Investigator investigator = new Investigator();
-        investigator.setLicenseNumber(request.getInvestigatorLicenseNumber());
-        newExperiment.setInvestigator(investigator);
-
-        Experiment createdExperiment = experimentService.createExperiment(newExperiment);
-        return ResponseEntity.ok(ExperimentResponse.fromEntity(createdExperiment));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ExperimentResponse.fromEntity(createdExperiment));
     }
 
     @GetMapping("/{id}")
